@@ -3,6 +3,31 @@ import translation
 import molecules as mol
 
 
+class Output:
+    def __init__(self, model):
+        self.meta = {}
+        self.model = model
+        self.timecourses = {state: SimulationResult(model.states[state]) for state in model.states}
+
+    def add_timepoint(self, species):
+        if isinstance(self.model.states[species], mol.Polymer):
+            pass #TODO: implement a useful method for Polymers
+        elif isinstance(self.model.states[species], mol.BioMoleculeCount):
+            self.timecourses[species].add_timepoint(self.model.states[species].count, self.model.time)
+
+
+class SimulationResult:
+    def __init__(self, species):
+        self.id = species.id
+        self.name = species.name
+        self.value = []
+        self.time = []
+
+    def add_timepoint(self, time, value):
+        self.value.append(value)
+        self.time.append(time)
+
+
 class Model:
     """
     Initializes the states and processes for the model and lets the processes update their corresponding states.
@@ -11,6 +36,7 @@ class Model:
     def __init__(self):
         self.states = {}
         self.processes = {}
+        self.time = 0
 
         # initiate states
         self.ribosomes = {'Ribosomes': mol.Ribosome('Ribosomes', 'Ribosomes', 10)}
@@ -23,6 +49,8 @@ class Model:
         trsl.set_states(self.mrnas.keys(), self.ribosomes.keys())
         self.processes = {"Translation": trsl}
 
+        self.results = Output(self)
+
     def step(self):
         """
         Do one update step for each process.
@@ -30,6 +58,11 @@ class Model:
         """
         for p in self.processes:
             self.processes[p].update(self)
+
+        for state in self.states:
+            self.results.add_timepoint(state)
+
+        self.time += 1
 
     def simulate(self, steps, log=True):
         """
@@ -46,3 +79,4 @@ class Model:
 if __name__ == "__main__":
     c = Model()
     c.simulate(100, log=True)
+
