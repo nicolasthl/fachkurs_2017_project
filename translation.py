@@ -30,6 +30,7 @@ class Translation(processes.Process):
 
 
     def __init__(self, id, name):
+        # call the constructor of the base class (processes.Process in this case)
         super().__init__(id, name)
 
     def update(self, model):

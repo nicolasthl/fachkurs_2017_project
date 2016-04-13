@@ -4,19 +4,30 @@ import modeldata
 
 
 class Output:
+    """
+    class for handling the simulation results of the different species types
+    """
     def __init__(self, model):
         self.meta = {}
         self.model = model
         self.timecourses = {state: SimulationResult(model.states[state]) for state in model.states}
 
     def add_timepoint(self, species):
+        """
+        add a simulation time point for one species
+        @param species: mol.BioMolecule
+        @return: None
+        """
         if isinstance(self.model.states[species], mol.Polymer):
             pass #TODO: implement a useful method for Polymers
         elif isinstance(self.model.states[species], mol.BioMoleculeCount):
-            self.timecourses[species].add_timepoint(self.model.states[species].count, self.model.time)
+            self.timecourses[species].add_timepoint(self.model.states[species].count, self.model.timestep)
 
 
 class SimulationResult:
+    """
+    handles and stores a simulation result for one species
+    """
     def __init__(self, species):
         self.id = species.id
         self.name = species.name
@@ -36,24 +47,31 @@ class Model:
     def __init__(self):
         self.states = {}
         self.processes = {}
-        self.time = 0
-        db = modeldata.ModelData()
+        self.timestep = 0
+        self.db = modeldata.ModelData()
+        self._initialize_states()
+        self._initialize_processes()
+        self.results = Output(self)
 
-        # initiate states
+    def _initialize_states(self):
+        """
+        initialize the different states
+        """
+        # ribosomes
         self.ribosomes = {'Ribosomes': mol.Ribosome('Ribosomes', 'Ribosomes', 10)}
+        self.states.update(self.ribosomes)
+
+        # mRNAs
         self.mrnas = {}
-        for i, mrna in enumerate(db.get_states(mol.MRNA)):
+        for i, mrna in enumerate(self.db.get_states(mol.MRNA)):
             id, name, sequence = mrna
             self.mrnas['mRNA_{0}_{1}'.format(id, i)] = mol.MRNA(id, name, sequence)
-        self.states.update(self.ribosomes)
         self.states.update(self.mrnas)
 
-        # initiate processes
+    def _initialize_processes(self):
         trsl = translation.Translation(1, "Translation")
         trsl.set_states(self.mrnas.keys(), self.ribosomes.keys())
         self.processes = {"Translation": trsl}
-
-        self.results = Output(self)
 
     def step(self):
         """
@@ -66,7 +84,7 @@ class Model:
         for state in self.states:
             self.results.add_timepoint(state)
 
-        self.time += 1
+        self.timestep += 1
 
     def simulate(self, steps, log=True):
         """
