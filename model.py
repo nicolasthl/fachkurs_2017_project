@@ -1,4 +1,5 @@
 import processes as proc
+import translation
 import molecules as mol
 
 
@@ -18,9 +19,9 @@ class Model:
         self.states.update(self.mrnas)
 
         # initiate processes
-        translation = proc.Translation(1, "Translation")
-        translation.set_states(self.mrnas.keys(), self.ribosomes.keys())
-        self.processes = {"Translation": translation}
+        trsl = translation.Translation(1, "Translation")
+        trsl.set_states(self.mrnas.keys(), self.ribosomes.keys())
+        self.processes = {"Translation": trsl}
 
     def step(self):
         """

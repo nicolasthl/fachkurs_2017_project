@@ -30,7 +30,7 @@ class Translation(processes.Process):
 
 
     def __init__(self, id, name):
-        super(Translation, self).__init__(id, name)
+        super().__init__(id, name)
 
     def update(self, model):
         """

@@ -52,7 +52,7 @@ class Polymer(BioMolecule):
     @type mass: float
     """
     def __init__(self, mid, name, sequence, mass=0):
-        super(Polymer, self).__init__(mid, name, mass)
+        super().__init__(mid, name, mass)
         self._sequence = sequence
 
     def __getitem__(self, value):
@@ -75,7 +75,7 @@ class Polymer(BioMolecule):
 
 class BioMoleculeCount(BioMolecule):
     def __init__(self, mid, name, count=0):
-        super(BioMoleculeCount, self).__init__(mid, name)
+        super().__init__(mid, name)
         self.count = count
 
     @property
@@ -89,7 +89,7 @@ class BioMoleculeCount(BioMolecule):
 
 class MRNA(Polymer):
     def __init__(self, mid, name, sequence, mass=0):
-        super(MRNA, self).__init__(mid, name, sequence, mass)
+        super().__init__(mid, name, sequence, mass)
         self.binding = [0]*(len(sequence)//3)
 
     def calculate_mass(self):
@@ -117,7 +117,7 @@ class Protein(Polymer):
     number_of_proteins = 0
 
     def __init__(self, mid, name, sequence, mass=0):
-        super(Protein, self).__init__(mid, name, sequence, mass)
+        super().__init__(mid, name, sequence, mass)
         self.number_of_proteins += 1
 
     def __add__(self, AS):
@@ -146,7 +146,7 @@ class Ribosome(BioMoleculeCount):
     """
 
     def __init__(self, mid, name, count=0):
-        super(Ribosome, self).__init__(mid, name, count)
+        super().__init__(mid, name, count)
 
 
 class Polymerase(BioMoleculeCount):
