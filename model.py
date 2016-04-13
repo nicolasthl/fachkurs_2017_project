@@ -1,6 +1,6 @@
-import processes as proc
 import translation
 import molecules as mol
+import modeldata
 
 
 class Output:
@@ -37,10 +37,14 @@ class Model:
         self.states = {}
         self.processes = {}
         self.time = 0
+        db = modeldata.ModelData()
 
         # initiate states
         self.ribosomes = {'Ribosomes': mol.Ribosome('Ribosomes', 'Ribosomes', 10)}
-        self.mrnas = {'MRNA_{0}'.format(i): mol.MRNA(i, 'MRNA_{0}'.format(i), "UUUUUUUUUUAA") for i in range(50)}
+        self.mrnas = {}
+        for i, mrna in enumerate(db.get_states(mol.MRNA)):
+            id, name, sequence = mrna
+            self.mrnas['mRNA_{0}_{1}'.format(id, i)] = mol.MRNA(id, name, sequence)
         self.states.update(self.ribosomes)
         self.states.update(self.mrnas)
 
