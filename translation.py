@@ -93,7 +93,7 @@ class Translation(processes.Process):
                 if i+1 >= len(mrna.sequence_triplet_binding):
                     return self.terminate(mrna, i) # terminate if mrna ends
                 if not mrna.sequence_triplet_binding[i + 1]: # if the next rna position is free
-                    mrna.sequence_triplet_binding[i] + aa
+                    mrna.sequence_triplet_binding[i] += aa
                     mrna.sequence_triplet_binding[i + 1] = mrna.sequence_triplet_binding[i]
                     mrna.sequence_triplet_binding[i] = 0
         return 0

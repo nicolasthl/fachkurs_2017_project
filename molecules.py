@@ -31,8 +31,7 @@ class BioMolecule:
         self.__mass = value
 
     def __repr__(self):
-        #todo: each molecule class should have something like this
-        pass
+        return ','.join([self.name, str(type(self))])
 
     def __str__(self):
         #todo: each class should have something like this
@@ -119,7 +118,7 @@ class Protein(Polymer):
         self.number_of_proteins += 1
 
     def __add__(self, AS):
-        self.sequence += AS
+        return self.sequence + AS
 
     def calculate_mass(self):
         AA_mass = dict(A=89.0929, R=175.208, N=132.118, D=132.094, C=121.158, Q=146.144, E=146.121, G=75.0664,
