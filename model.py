@@ -49,11 +49,11 @@ class Model:
         self.processes = {}
         self.timestep = 0
         self.db = modeldata.ModelData()
-        self._initialize_states()
-        self._initialize_processes()
+        self.__initialize_states()
+        self.__initialize_processes()
         self.results = Output(self)
 
-    def _initialize_states(self):
+    def __initialize_states(self):
         """
         initialize the different states
         """
@@ -68,7 +68,7 @@ class Model:
             self.mrnas['mRNA_{0}_{1}'.format(id, i)] = mol.MRNA(id, name, sequence)
         self.states.update(self.mrnas)
 
-    def _initialize_processes(self):
+    def __initialize_processes(self):
         trsl = translation.Translation(1, "Translation")
         trsl.set_states(self.mrnas.keys(), self.ribosomes.keys())
         self.processes = {"Translation": trsl}
