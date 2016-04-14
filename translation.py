@@ -1,6 +1,6 @@
 import processes
 import molecules
-import numpy.random as npr
+import numpy
 
 class Translation(processes.Process):
     """
@@ -32,6 +32,7 @@ class Translation(processes.Process):
     def __init__(self, id, name):
         # call the constructor of the base class (processes.Process in this case)
         super().__init__(id, name)
+        self.ribosomes = molecules.Ribosome('ribo', 'ribosome', 1)
 
     def update(self, model):
         """
@@ -57,10 +58,10 @@ class Translation(processes.Process):
 
         @type mrna: MRNA
         """
-        if not mrna.binding[0]:  #  no mrna bound yet and target mrna still free at pos 0
+        if not mrna.binding[0]:  #  no ribosome bound yet and target mrna still free at pos 0
             # bind a nascent protein to the 0 codon
-            if npr.poisson(self.ribosomes.count) > 1: # at least one binding event happens in time step
-                mrna.binding[0] =  molecules.Protein("Protein_{0}".format(mrna.id),
+            if numpy.random.poisson(self.ribosomes.count) > 1: # at least one binding event happens in time step
+                mrna.binding[0] = molecules.Protein("Protein_{0}".format(mrna.id),
                                                      "Protein_{0}".format(mrna.id),
                                                      "")
                 self.ribosomes.count -= 1
