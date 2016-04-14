@@ -79,7 +79,8 @@ class Translation(processes.Process):
                 aa = self.code[codon]
                 if aa == "*": # terminate at stop codon
                     return self.terminate(mrna, i)
-
+                if i+1 >= len(mrna.binding):
+                    return self.terminate(mrna, i) # terminate if mrna ends
                 if not mrna.binding[i + 1]: # if the next rna position is free
                     mrna.binding[i] + aa
                     mrna.binding[i + 1] = mrna.binding[i]
