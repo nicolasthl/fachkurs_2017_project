@@ -6,6 +6,7 @@ import molecules
 import translation
 import model
 
+
 class TestModel(unittest.TestCase):
     def setUp(self):
         self.m = model.Model()
@@ -41,6 +42,7 @@ class TestData(unittest.TestCase):
         for mrna in mrnas:
             self.assertRegex(mrna[0], "MRNA_\d+")
 
+
 class TestTranslation(unittest.TestCase):
     def setUp(self):
         self.m = model.Model()
@@ -55,12 +57,11 @@ class TestTranslation(unittest.TestCase):
         npr_mock.assert_called_with(1)
 
 
-
 class TestSomething(unittest.TestCase):
-
     def test_model(self):
         m = model.Model()
         m.simulate(100, log=False)
+
 
 if __name__ == '__main__':
     unittest.main()

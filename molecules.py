@@ -6,11 +6,11 @@ class BioMolecule:
     A generic molecule that has basic attributes like name and
     mass.
 
-    @type mid: int
     @type name: str
     @type mass: float
     """
-    def __init__(self,  name, mass=0):
+
+    def __init__(self, name, mass=0):
         self.name = name
         self.mass = mass
 
@@ -34,7 +34,7 @@ class BioMolecule:
         return ','.join([self.name, str(type(self))])
 
     def __str__(self):
-        #todo: each class should have something like this
+        # todo: each class should have something like this
         pass
 
 
@@ -43,11 +43,11 @@ class Polymer(BioMolecule):
     A polymer molecule that has a sequence attribute which is
     accessible via indexing the object.
 
-    @type mid: int
     @type name: str
     @type sequence: str
     @type mass: float
     """
+
     def __init__(self, name, sequence, mass=0):
         super().__init__(name, mass)
         self._sequence = sequence
@@ -87,11 +87,11 @@ class BioMoleculeCount(BioMolecule):
 class MRNA(Polymer):
     def __init__(self, name, sequence, mass=0):
         super().__init__(name, sequence, mass)
-        self.sequence_triplet_binding = [0]*(len(sequence)//3)
+        self.sequence_triplet_binding = [0] * (len(sequence) // 3)
 
     def calculate_mass(self):
         self.mass = 0
-        NA_mass = {'A': 1.0, 'U': 2.2, 'G':2.1, 'C':1.3}
+        NA_mass = {'A': 1.0, 'U': 2.2, 'G': 2.1, 'C': 1.3}
         for na in self.sequence:
             self.mass += NA_mass[na]
 

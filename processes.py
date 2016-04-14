@@ -2,6 +2,7 @@ class Process(object):
     """
     Parent for all cellular processes.
     """
+
     def __init__(self, id, name):
         self.id = id
         self.name = name

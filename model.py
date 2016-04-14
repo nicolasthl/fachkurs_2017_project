@@ -7,6 +7,7 @@ class Output:
     """
     class for handling the simulation results of the different species types
     """
+
     def __init__(self, model):
         self.meta = {}
         self.model = model
@@ -19,7 +20,7 @@ class Output:
         @return: None
         """
         if isinstance(self.model.states[species], mol.Polymer):
-            pass #TODO: implement a useful method for Polymers
+            pass  # TODO: implement a useful method for Polymers
         elif isinstance(self.model.states[species], mol.BioMoleculeCount):
             self.timecourses[species].add_timepoint(self.model.states[species].count, self.model.timestep)
 
@@ -28,6 +29,7 @@ class SimulationResult:
     """
     handles and stores a simulation result for one species
     """
+
     def __init__(self, species):
         self.name = species.name
         self.value = []
@@ -79,7 +81,6 @@ class Model:
         self.states.update(self.ribosomes)
         self.states.update(self.mrnas)
 
-
     def __initialize_processes(self):
         trsl = translation.Translation(1, "Translation")
         trsl.set_states(self.mrnas.keys(), self.ribosomes.keys())
@@ -113,4 +114,3 @@ class Model:
 if __name__ == "__main__":
     c = Model()
     c.simulate(100, log=True)
-

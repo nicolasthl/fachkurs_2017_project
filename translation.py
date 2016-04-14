@@ -2,6 +2,7 @@ import processes
 import molecules
 import numpy
 
+
 class Translation(processes.Process):
     """
     Translation is instantiated in the Cell to produce proteins.
@@ -11,23 +12,22 @@ class Translation(processes.Process):
     they are already bound.
 
     """
-    code = dict([('UCA','S'), ('UCG','S'), ('UCC','S'), ('UCU','S'),
-                 ('UUU','F'), ('UUC','F'), ('UUA','L'), ('UUG','L'),
-                 ('UAU','Y'), ('UAC','Y'), ('UAA','*'), ('UAG','*'),
-                 ('UGU','C'), ('UGC','C'), ('UGA','*'), ('UGG','W'),
-                 ('CUA','L'), ('CUG','L'), ('CUC','L'), ('CUU','L'),
-                 ('CCA','P'), ('CCG','P'), ('CCC','P'), ('CCU','P'),
-                 ('CAU','H'), ('CAC','H'), ('CAA','Q'), ('CAG','Q'),
-                 ('CGA','R'), ('CGG','R'), ('CGC','R'), ('CGU','R'),
-                 ('AUU','I'), ('AUC','I'), ('AUA','I'), ('AUG','M'),
-                 ('ACA','T'), ('ACG','T'), ('ACC','T'), ('ACU','T'),
-                 ('AAU','N'), ('AAC','N'), ('AAA','K'), ('AAG','K'),
-                 ('AGU','S'), ('AGC','S'), ('AGA','R'), ('AGG','R'),
-                 ('GUA','V'), ('GUG','V'), ('GUC','V'), ('GUU','V'),
-                 ('GCA','A'), ('GCG','A'), ('GCC','A'), ('GCU','A'),
-                 ('GAU','D'), ('GAC','D'), ('GAA','E'), ('GAG','E'),
-                 ('GGA','G'), ('GGG','G'), ('GGC','G'), ('GGU','G')])
-
+    code = dict([('UCA', 'S'), ('UCG', 'S'), ('UCC', 'S'), ('UCU', 'S'),
+                 ('UUU', 'F'), ('UUC', 'F'), ('UUA', 'L'), ('UUG', 'L'),
+                 ('UAU', 'Y'), ('UAC', 'Y'), ('UAA', '*'), ('UAG', '*'),
+                 ('UGU', 'C'), ('UGC', 'C'), ('UGA', '*'), ('UGG', 'W'),
+                 ('CUA', 'L'), ('CUG', 'L'), ('CUC', 'L'), ('CUU', 'L'),
+                 ('CCA', 'P'), ('CCG', 'P'), ('CCC', 'P'), ('CCU', 'P'),
+                 ('CAU', 'H'), ('CAC', 'H'), ('CAA', 'Q'), ('CAG', 'Q'),
+                 ('CGA', 'R'), ('CGG', 'R'), ('CGC', 'R'), ('CGU', 'R'),
+                 ('AUU', 'I'), ('AUC', 'I'), ('AUA', 'I'), ('AUG', 'M'),
+                 ('ACA', 'T'), ('ACG', 'T'), ('ACC', 'T'), ('ACU', 'T'),
+                 ('AAU', 'N'), ('AAC', 'N'), ('AAA', 'K'), ('AAG', 'K'),
+                 ('AGU', 'S'), ('AGC', 'S'), ('AGA', 'R'), ('AGG', 'R'),
+                 ('GUA', 'V'), ('GUG', 'V'), ('GUC', 'V'), ('GUU', 'V'),
+                 ('GCA', 'A'), ('GCG', 'A'), ('GCC', 'A'), ('GCU', 'A'),
+                 ('GAU', 'D'), ('GAC', 'D'), ('GAA', 'E'), ('GAG', 'E'),
+                 ('GGA', 'G'), ('GGG', 'G'), ('GGC', 'G'), ('GGU', 'G')])
 
     def __init__(self, id, name):
         # call the constructor of the base class (processes.Process in this case)
@@ -35,11 +35,11 @@ class Translation(processes.Process):
         self.__initiate_ribosomes()
 
     def __repr__(self):
-        #todo: each process class should have something like this
+        # todo: each process class should have something like this
         pass
 
     def __str__(self):
-        #todo: each process class should have something like this
+        # todo: each process class should have something like this
         pass
 
     def __initiate_ribosomes(self):
@@ -69,9 +69,9 @@ class Translation(processes.Process):
 
         @type mrna: MRNA
         """
-        if not mrna.sequence_triplet_binding[0]:  #  no ribosome bound yet and target mrna still free at pos 0
+        if not mrna.sequence_triplet_binding[0]:  # no ribosome bound yet and target mrna still free at pos 0
             # bind a nascent protein to the 0 codon
-            if numpy.random.poisson(self.ribosomes.count) > 1: # at least one binding event happens in time step
+            if numpy.random.poisson(self.ribosomes.count) > 1:  # at least one binding event happens in time step
                 mrna.sequence_triplet_binding[0] = molecules.Protein("Protein_{0}".format(mrna.name.split("_")[-1]),
                                                                      "")
                 self.ribosomes.count -= 1
@@ -86,13 +86,13 @@ class Translation(processes.Process):
         """
         for i, ribosome in enumerate(mrna.sequence_triplet_binding):
             if isinstance(ribosome, molecules.Protein):
-                codon = mrna[i*3:i*3+3]
+                codon = mrna[i * 3:i * 3 + 3]
                 aa = self.code[codon]
-                if aa == "*": # terminate at stop codon
+                if aa == "*":  # terminate at stop codon
                     return self.terminate(mrna, i)
-                if i+1 >= len(mrna.sequence_triplet_binding):
-                    return self.terminate(mrna, i) # terminate if mrna ends
-                if not mrna.sequence_triplet_binding[i + 1]: # if the next rna position is free
+                if i + 1 >= len(mrna.sequence_triplet_binding):
+                    return self.terminate(mrna, i)  # terminate if mrna ends
+                if not mrna.sequence_triplet_binding[i + 1]:  # if the next rna position is free
                     mrna.sequence_triplet_binding[i] += aa
                     mrna.sequence_triplet_binding[i + 1] = mrna.sequence_triplet_binding[i]
                     mrna.sequence_triplet_binding[i] = 0
@@ -102,7 +102,7 @@ class Translation(processes.Process):
         """
         Splits the ribosome/MRNA complex and returns a protein.
         """
-        protein = mrna.sequence_triplet_binding[i] # bound mRNA
+        protein = mrna.sequence_triplet_binding[i]  # bound mRNA
         mrna.sequence_triplet_binding[i] = 0
         self.ribosomes.count += 1
         return protein
