@@ -48,6 +48,7 @@ class Model:
         self.states = {}
         self.processes = {}
         self.timestep = 0
+        self.volume = 1
         self.db = modeldata.ModelData()
         self.__initialize_states()
         self.__initialize_processes()
