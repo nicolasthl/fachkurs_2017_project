@@ -19,7 +19,7 @@ class ModelData:
         """
         if molecule_class == mol.MRNA:
             alphabet = "AUGC"
-            sequence = ''.join([rnd.choice(alphabet) for i in range(50)])
+            sequence = ''.join([rnd.choice(alphabet) for i in rnd.randint(50,500)])
             mrnas = []
             for i in range(50):
                  mrnas.append((i, 'MRNA_{0}'.format(i), sequence))
