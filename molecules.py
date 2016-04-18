@@ -117,8 +117,9 @@ class Protein(Polymer):
         super().__init__(name, sequence, mass)
         self.number_of_proteins += 1
 
-    def __add__(self, AS):
-        return self.sequence + AS
+    def __iadd__(self, AS):
+        self.sequence = self.sequence + AS
+        return self
 
     def calculate_mass(self):
         AA_mass = dict(A=89.0929, R=175.208, N=132.118, D=132.094, C=121.158, Q=146.144, E=146.121, G=75.0664,
