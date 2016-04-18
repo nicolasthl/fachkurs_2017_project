@@ -47,14 +47,23 @@ class TestTranslation(unittest.TestCase):
     def setUp(self):
         self.m = model.Model()
         self.t = translation.Translation("trsl", "test_translation")
+        self.mrna = molecules.MRNA("id", "mrna", "AUAUAUAUAAUG")
+
 
     @patch('translation.numpy.random.poisson')
     def test_initiation(self, npr_mock):
         npr_mock.return_value = 2
-        mrna = molecules.MRNA("id", "mrna", "AUAUAUAUAAUG")
-        self.t.initiate(mrna)
-        self.assertIsInstance(mrna.sequence_triplet_binding[0], molecules.Protein)
+        self.t.initiate(self.mrna)
+        self.assertIsInstance(self.mrna.sequence_triplet_binding[0], molecules.Protein)
         npr_mock.assert_called_with(1)
+
+    def test_sequence(self):
+        prot = 0
+        self.t.ribosomes.count = 100
+        while isinstance(prot, int):
+            self.t.initiate(self.mrna)
+            prot = self.t.elongate(self.mrna)
+        self.assertEqual(prot.sequence, "IYI")
 
 
 class TestSomething(unittest.TestCase):
