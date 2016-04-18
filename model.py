@@ -64,14 +64,13 @@ class Model:
         self.results = Output(self)  #
 
     def __initialize_ribosomes(self):
-        self.ribosomes = {'Ribosomes': mol.Ribosome('Ribosomes', 10)}
+        self.ribosomes = {'Ribosomes': mol.Ribosome('Ribos', 'Ribosomes', 10)}
 
     def __initialize_mRNA(self):
         # I think to have a function for each molecule state generation is more intuitive and less error prone
-
         for i, mrna in enumerate(self.db.get_states(mol.MRNA)):
-            name, sequence = mrna
-            self.mrnas[name] = mol.MRNA(name, sequence)
+            mid, name, sequence = mrna
+            self.mrnas[mid] = mol.MRNA(mid, name, sequence)
 
     def __initialize_states(self):
         """
@@ -108,7 +107,7 @@ class Model:
             self.step()
             if log:  # This could be an entry point for further logging
                 # print count of each protein to the screen
-                print('\r{}'.format([len(self.states[x]) for x in self.states.keys() if "Protein_" in x]), end='')
+                print('\r{}'.format([len(self.states[x]) for x in self.states.keys() if "Protein" in x]), end='')
 
 
 if __name__ == "__main__":

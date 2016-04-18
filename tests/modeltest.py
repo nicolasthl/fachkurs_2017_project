@@ -40,7 +40,7 @@ class TestData(unittest.TestCase):
         db = modeldata.ModelData()
         mrnas = db.get_states(molecules.MRNA)
         for mrna in mrnas:
-            self.assertRegex(mrna[0], "MRNA_\d+")
+            self.assertRegex(mrna[0], "MRNA_.+")
 
 
 class TestTranslation(unittest.TestCase):
@@ -51,7 +51,7 @@ class TestTranslation(unittest.TestCase):
     @patch('translation.numpy.random.poisson')
     def test_initiation(self, npr_mock):
         npr_mock.return_value = 2
-        mrna = molecules.MRNA("mrna", "AUAUAUAUAAUG")
+        mrna = molecules.MRNA("id", "mrna", "AUAUAUAUAAUG")
         self.t.initiate(mrna)
         self.assertIsInstance(mrna.sequence_triplet_binding[0], molecules.Protein)
         npr_mock.assert_called_with(1)

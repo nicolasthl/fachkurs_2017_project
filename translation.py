@@ -43,7 +43,7 @@ class Translation(processes.Process):
         pass
 
     def __initiate_ribosomes(self):
-        self.ribosomes = molecules.Ribosome('Ribosome', 1)
+        self.ribosomes = molecules.Ribosome('Ribosomes', 'Ribosome', 1)
 
     def update(self, model):
         """
@@ -72,8 +72,9 @@ class Translation(processes.Process):
         if not mrna.sequence_triplet_binding[0]:  # no ribosome bound yet and target mrna still free at pos 0
             # bind a nascent protein to the 0 codon
             if numpy.random.poisson(self.ribosomes.count) > 1:  # at least one binding event happens in time step
-                mrna.sequence_triplet_binding[0] = molecules.Protein("Protein_{0}".format(mrna.name.split("_")[-1]),
-                                                                     "")
+                mrna.sequence_triplet_binding[0] = molecules.Protein("Protein_{}".format(mrna.mid),
+                                                                     "Protein_{0}".format(mrna.name.split("_")[-1]),
+                                                                     "",)
                 self.ribosomes.count -= 1
 
     def elongate(self, mrna):

@@ -10,9 +10,18 @@ class BioMolecule:
     @type mass: float
     """
 
-    def __init__(self, name, mass=0):
+    def __init__(self, mid, name, mass=0):
+        self.mid = mid
         self.name = name
         self.mass = mass
+
+    @property
+    def mid(self):
+        return self.__mid
+
+    @mid.setter
+    def mid(self, value):
+        self.__mid = value
 
     @property
     def name(self):
@@ -48,9 +57,9 @@ class Polymer(BioMolecule):
     @type mass: float
     """
 
-    def __init__(self, name, sequence, mass=0):
-        super().__init__(name, mass)
-        self._sequence = sequence
+    def __init__(self, mid, name, sequence, mass=0):
+        super().__init__(mid, name, mass)
+        self.__sequence = sequence
 
     def __getitem__(self, value):
         return self.sequence[value]
@@ -60,19 +69,19 @@ class Polymer(BioMolecule):
 
     @property
     def sequence(self):
-        return self._sequence
+        return self.__sequence
 
     @sequence.setter
     def sequence(self, value):
         if not isinstance(value, str):
             raise Exception("sequence must be a string")
             # TODO: check for valid nucleotides here
-        self._sequence = value.upper()
+        self.__sequence = value.upper()
 
 
 class BioMoleculeCount(BioMolecule):
-    def __init__(self, name, count=0):
-        super().__init__(name)
+    def __init__(self, mid, name, count=0):
+        super().__init__(mid, name)
         self.count = count
 
     @property
@@ -85,8 +94,8 @@ class BioMoleculeCount(BioMolecule):
 
 
 class MRNA(Polymer):
-    def __init__(self, name, sequence, mass=0):
-        super().__init__(name, sequence, mass)
+    def __init__(self, mid, name, sequence, mass=0):
+        super().__init__(mid, name, sequence, mass)
         self.sequence_triplet_binding = [0] * (len(sequence) // 3)
 
     def calculate_mass(self):
@@ -113,9 +122,8 @@ class Protein(Polymer):
     """
     number_of_proteins = 0
 
-    def __init__(self, name, sequence, mass=0):
-        super().__init__(name, sequence, mass)
-        self.number_of_proteins += 1
+    def __init__(self, mid, name, sequence, mass=0):
+        super().__init__(mid, name, sequence, mass)
 
     def __iadd__(self, AS):
         self.sequence = self.sequence + AS
@@ -143,8 +151,8 @@ class Ribosome(BioMoleculeCount):
     ribosome and the finished protein is returned.
     """
 
-    def __init__(self, name, count=0):
-        super().__init__(name, count)
+    def __init__(self, mid, name, count=0):
+        super().__init__(mid, name, count)
 
 
 class Polymerase(BioMoleculeCount):
