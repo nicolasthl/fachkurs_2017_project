@@ -10,3 +10,11 @@ virtual cell.
 This project is inspired by the first steps taken towards modelling a
 whole cell by [Karr et
 al.](http://www.sciencedirect.com/science/article/pii/S0092867412007763).
+
+We provided a minimal simulation framework for you to simplify
+distribution of the work into subgroups and enable us to simulate the
+model with different building blocks.
+
+You should form groups of two students to work on one of the
+subprojects and use `git` to integrate your work with the other
+groups.
