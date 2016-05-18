@@ -3,8 +3,8 @@
 The project we will be doing during this course is not a lightweight
 task. Our goal will be to create a model that is able to simulate a
 whole yeast cell in all its complexity. Naturally we will fail
-miserably, in the complete reconstruction, but we will hopefully learn
-how to do it in priciple and lay the groundwork for an extendable
+miserably in the complete reconstruction, but we will hopefully learn
+how to do it in principle and lay the groundwork for an extendable
 virtual cell.
 
 This project is inspired by the first steps taken towards modelling a
@@ -17,4 +17,6 @@ model with different building blocks.
 
 You should form groups of two students to work on one of the
 subprojects and use `git` to integrate your work with the other
-groups.
+groups. Look into the
+[wiki](https://github.com/tbphu/fachkurs_2016_project/wiki/) for more
+details on the proposed subprojects.
