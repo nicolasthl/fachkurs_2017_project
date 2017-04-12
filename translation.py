@@ -34,13 +34,10 @@ class Translation(processes.Process):
         super().__init__(id, name)
         self.__initiate_ribosomes()
 
-    def __repr__(self):
-        # todo: each process class should have something like this
-        pass
-
     def __str__(self):
-        # todo: each process class should have something like this
-        pass
+        # return string output of translation process 
+        # todo: each process class should define this
+        return "Translation process for mRNAs: {}".format(list(self.substrate_ids))
 
     def __initiate_ribosomes(self):
         self.ribosomes = molecules.Ribosome('Ribosomes', 'Ribosome', 1)
