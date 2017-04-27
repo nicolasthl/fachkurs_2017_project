@@ -1,4 +1,4 @@
-__author__ = 'max'
+import numbers
 
 
 class BioMolecule:
@@ -16,27 +16,13 @@ class BioMolecule:
         self.mass = mass
 
     @property
-    def mid(self):
-        return self.__mid
-
-    @mid.setter
-    def mid(self, value):
-        self.__mid = value
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, value):
-        self.__name = value
-
-    @property
     def mass(self):
         return self.__mass
 
     @mass.setter
     def mass(self, value):
+        if not isinstance(value, numbers.Number):
+            raise ValueError('Molecule mass has to be a number.')
         self.__mass = value
 
     def __repr__(self):
