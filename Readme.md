@@ -18,5 +18,5 @@ model with different building blocks.
 You should form groups of two students to work on one of the
 subprojects and use `git` to integrate your work with the other
 groups. Look into the
-[wiki](https://github.com/tbphu/fachkurs_2016_project/wiki/) for more
+[wiki](https://github.com/tbphu/fachkurs_2017_project/wiki/) for more
 details on the proposed subprojects.
