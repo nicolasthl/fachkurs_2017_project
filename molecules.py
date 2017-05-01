@@ -1,6 +1,3 @@
-import numbers
-
-
 class BioMolecule:
     """
     A generic molecule that has basic attributes like name and
@@ -15,22 +12,8 @@ class BioMolecule:
         self.name = name
         self.mass = mass
 
-    @property
-    def mass(self):
-        return self.__mass
-
-    @mass.setter
-    def mass(self, value):
-        if not isinstance(value, numbers.Number):
-            raise ValueError('Molecule mass has to be a number.')
-        self.__mass = value
-
     def __repr__(self):
         return ','.join([self.name, str(type(self))])
-
-    def __str__(self):
-        # todo: each class should have something like this
-        pass
 
 
 class Polymer(BioMolecule):
@@ -45,7 +28,7 @@ class Polymer(BioMolecule):
 
     def __init__(self, mid, name, sequence, mass=0):
         super().__init__(mid, name, mass)
-        self.__sequence = sequence
+        self.sequence = sequence
 
     def __getitem__(self, value):
         return self.sequence[value]
@@ -53,36 +36,18 @@ class Polymer(BioMolecule):
     def __setitem__(self, key, value):
         self.sequence[key] = value
 
-    @property
-    def sequence(self):
-        return self.__sequence
-
-    @sequence.setter
-    def sequence(self, value):
-        if not isinstance(value, str):
-            raise Exception("sequence must be a string")
-            # TODO: check for valid nucleotides here
-        self.__sequence = value.upper()
-
 
 class BioMoleculeCount(BioMolecule):
     def __init__(self, mid, name, count=0):
         super().__init__(mid, name)
         self.count = count
 
-    @property
-    def count(self):
-        return self.__count
-
-    @count.setter
-    def count(self, value):
-        self.__count = value
-
 
 class MRNA(Polymer):
     def __init__(self, mid, name, sequence, mass=0):
         super().__init__(mid, name, sequence, mass)
         self.sequence_triplet_binding = [0] * (len(sequence) // 3)
+        self.calculate_mass()
 
     def calculate_mass(self):
         self.mass = 0
@@ -102,9 +67,6 @@ class Protein(Polymer):
     >> protein + "A"
     >> protein.sequence
     MVFTA
-
-
-
     """
     number_of_proteins = 0
 

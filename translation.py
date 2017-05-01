@@ -1,6 +1,6 @@
 import processes
 import molecules
-import numpy
+import numpy as np
 
 
 class Translation(processes.Process):
@@ -68,7 +68,7 @@ class Translation(processes.Process):
         """
         if not mrna.sequence_triplet_binding[0]:  # no ribosome bound yet and target mrna still free at pos 0
             # bind a nascent protein to the 0 codon
-            if numpy.random.poisson(self.ribosomes.count) > 1:  # at least one binding event happens in time step
+            if np.random.poisson(self.ribosomes.count) > 1:  # at least one binding event happens in time step
                 mrna.sequence_triplet_binding[0] = molecules.Protein("Protein_{}".format(mrna.mid),
                                                                      "Protein_{0}".format(mrna.name.split("_")[-1]),
                                                                      "",)

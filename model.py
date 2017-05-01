@@ -9,7 +9,6 @@ class Output:
     """
 
     def __init__(self, model):
-        self.meta = {}
         self.model = model
         self.timecourses = {state: SimulationResult(model.states[state]) for state in model.states}
 
@@ -46,22 +45,19 @@ class Model:
     """
 
     def __init__(self):
+        # all selfs should be initialized in the constructor
         self.states = {}
         self.processes = {}
         self.timestep = 0
-        self.mrnas = {}  # all selfs should be initialized in the constructor
+        self.mrnas = {}
         self.ribosomes = {}
-        self.volume = 1
         self.db = modeldata.ModelData()
 
-        # ribosomes
         self.__initialize_ribosomes()
-        # mRNAs
         self.__initialize_mRNA()
-
         self.__initialize_states()
         self.__initialize_processes()
-        self.results = Output(self)  #
+        self.results = Output(self)
 
     def __initialize_ribosomes(self):
         self.ribosomes = {'Ribosomes': mol.Ribosome('Ribos', 'Ribosomes', 10)}
@@ -107,7 +103,7 @@ class Model:
             self.step()
             if log:  # This could be an entry point for further logging
                 # print count of each protein to the screen
-                print('\r{}'.format([len(self.states[x]) for x in self.states.keys() if "Protein" in x]), end='')
+                print('{}'.format([(len(self.states[x]), x) for x in self.states.keys() if "Protein" in x]))
 
 
 if __name__ == "__main__":
