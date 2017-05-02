@@ -29,9 +29,9 @@ class Translation(processes.Process):
                  ('GAU', 'D'), ('GAC', 'D'), ('GAA', 'E'), ('GAG', 'E'),
                  ('GGA', 'G'), ('GGG', 'G'), ('GGC', 'G'), ('GGU', 'G')])
 
-    def __init__(self, id, name):
+    def __init__(self, pid, name):
         # call the constructor of the base class (processes.Process in this case)
-        super().__init__(id, name)
+        super().__init__(pid, name)
         self.__initiate_ribosomes()
 
     def __str__(self):
