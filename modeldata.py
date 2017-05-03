@@ -45,5 +45,5 @@ class ModelData:
 
             for gene in genes:
                 for i in range(rnd.randint(1, 10)):
-                    mrnas.append(("MRNA_{}_{}".format(gene, i), gene, genes[gene]))
+                    mrnas.append((gene, genes[gene]))
             return mrnas
