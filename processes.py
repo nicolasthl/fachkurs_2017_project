@@ -3,8 +3,7 @@ class Process:
     Parent for all cellular processes.
     """
 
-    def __init__(self, id, name, model):
-        self.id = id
+    def __init__(self, name, model):
         self.name = name
         self.model = model
 
