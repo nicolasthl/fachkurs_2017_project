@@ -1,20 +1,14 @@
-class Process(object):
+class Process:
     """
     Parent for all cellular processes.
     """
 
-    def __init__(self, id, name):
+    def __init__(self, id, name, model):
         self.id = id
         self.name = name
+        self.model = model
 
-        self.enzyme_ids = []
-        self.substrate_ids = []
-
-    def set_states(self, substrate_ids, enzyme_ids):
-        self.enzyme_ids = enzyme_ids
-        self.substrate_ids = substrate_ids
-
-    def update(self, model):
+    def update(self):
         """
         Has to be implemented by child class.
         """
