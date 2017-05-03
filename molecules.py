@@ -1,19 +1,76 @@
 class BioMolecule:
-    """
-    A generic molecule that has basic attributes like name and
-    mass.
-
-    @type name: str
-    @type mass: float
-    """
-
-    def __init__(self, mid, name, mass=0):
+    def __init__(self, mid, mass):
         self.mid = mid
-        self.name = name
         self.mass = mass
 
-    def __repr__(self):
-        return ','.join([self.name, str(type(self))])
+
+class BioMoleculeContainer:
+    def __init__(self, name):
+        self.name = name
+
+
+class BioMoleculeCount(BioMoleculeContainer):
+    def __init__(self, name, count=0):
+        super().__init__(name) # call __init__ of BioMoleculeContainer
+        self.count = count
+
+
+class Ribosome(BioMoleculeCount):
+    """
+    A ribosome can bind MRNA and translate it. After translation is
+    finished it produces a protein.
+
+    During initiation the ribosome checks if a given MRNA is bound
+    by another ribosome and binds only if position 0 is empty.
+
+    Elongation checks if the next codon is unbound and only elongates
+    if the ribosome can move on. If the ribosome encounters a stop
+    codon ("*") translation terminates. The MRNA is detached from the
+    ribosome and the finished protein is returned.
+    """
+
+    def __init__(self, name, count=0):
+        super().__init__(name, count)
+
+
+class Polymerase(BioMoleculeCount):
+    """
+    A polymerase that can elongate nucleotide molecules. This could be used to derive special
+    RNA and DNA polymerases.
+    """
+    pass
+
+
+class RNAPolymeraseII(Polymerase):
+    """
+    A polymerase that generates mRNAs from DNA sequences.
+    """
+    pass
+
+
+class BioMoleculeSet(BioMoleculeContainer):
+    def __init__(self, name, biomlist=[]):
+        super().__init__(name)
+        self.biomolecule_dict = {}
+        for biom in biomlist:
+            self.biomolecule_dict[biom.mid] = biom
+
+    def __getitem__(self, key):
+        return self.biomolecule_dict[key]
+
+    def __setitem__(self, key, biom):
+        if not isinstance(biom, BioMolecule):
+            raise Exception('BioMoleculeList can only contain Biomolecules')
+        assert biom.mid == key
+        self.biomolecule_dict[key] = biom
+
+    def __iter__(self):
+        for key in self.biomolecule_dict.keys():
+            yield key
+
+    @property
+    def count(self):
+        return len(self.biomolecule_dict)
 
 
 class Polymer(BioMolecule):
@@ -21,31 +78,27 @@ class Polymer(BioMolecule):
     A polymer molecule that has a sequence attribute which is
     accessible via indexing the object.
 
-    @type name: str
-    @type sequence: str
+    @type mid: str
+    @type sequence: list or str
     @type mass: float
     """
 
-    def __init__(self, mid, name, sequence, mass=0):
-        super().__init__(mid, name, mass)
+    def __init__(self, mid, sequence, mass=0):
+        super().__init__(mid, mass)
         self.sequence = sequence
 
-    def __getitem__(self, value):
-        return self.sequence[value]
-
-    def __setitem__(self, key, value):
-        self.sequence[key] = value
-
-
-class BioMoleculeCount(BioMolecule):
-    def __init__(self, mid, name, count=0):
-        super().__init__(mid, name)
-        self.count = count
+    def __getitem__(self, key):
+        """
+        implement the access operator []
+        @param key: int or slice
+        @return: sequence element
+        """
+        return self.sequence[key]
 
 
 class MRNA(Polymer):
-    def __init__(self, mid, name, sequence, mass=0):
-        super().__init__(mid, name, sequence, mass)
+    def __init__(self, mid, sequence, mass=0):
+        super().__init__(mid, sequence, mass)
         self.sequence_triplet_binding = [0] * (len(sequence) // 3)
         self.calculate_mass()
 
@@ -70,8 +123,8 @@ class Protein(Polymer):
     """
     number_of_proteins = 0
 
-    def __init__(self, mid, name, sequence, mass=0):
-        super().__init__(mid, name, sequence, mass)
+    def __init__(self, mid, sequence, mass=0):
+        super().__init__(mid, sequence, mass)
 
     def __iadd__(self, AS):
         self.sequence = self.sequence + AS
@@ -85,34 +138,3 @@ class Protein(Polymer):
             self.mass += AA_mass[aa]
 
 
-class Ribosome(BioMoleculeCount):
-    """
-    A ribosome can bind MRNA and translate it. After translation is
-    finished it produces a protein.
-
-    During initiation the ribosome checks if a given MRNA is bound
-    by another ribosome and binds only if position 0 is empty.
-
-    Elongation checks if the next codon is unbound and only elongates
-    if the ribosome can move on. If the ribosome encounters a stop
-    codon ("*") translation terminates. The MRNA is detached from the
-    ribosome and the finished protein is returned.
-    """
-
-    def __init__(self, mid, name, count=0):
-        super().__init__(mid, name, count)
-
-
-class Polymerase(BioMoleculeCount):
-    """
-    A polymerase that can elongate nucleotide molecules. This could be used to derive special
-    RNA and DNA polymerases.
-    """
-    pass
-
-
-class RNAPolymeraseII(Polymerase):
-    """
-    A polymerase that generates mRNAs from DNA sequences.
-    """
-    pass
