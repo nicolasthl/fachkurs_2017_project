@@ -57,7 +57,11 @@ class BioMoleculeSet(BioMoleculeContainer):
 
     def add_new_biomolecule(self, biom):
         assert isinstance(biom, BioMolecule)
-        self.biomolecule_dict[biom.mid] = biom
+        if not self.biomolecule_dict.has_key(biom.mid):
+            self.biomolecule_dict[biom.mid] = biom
+        else:
+            pass
+            # TODO implement more than one biomolecule per ID
 
     def __getitem__(self, key):
         return self.biomolecule_dict[key]
