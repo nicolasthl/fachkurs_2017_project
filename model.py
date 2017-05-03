@@ -54,6 +54,7 @@ class Model:
 
         self.__initialize_ribosomes()
         self.__initialize_mRNA()
+        self.__initialize_proteins()
         self.__initialize_processes()
 
         self.results = Output(self)
@@ -72,7 +73,10 @@ class Model:
     def __initialize_mRNA(self):
         self.add_new_state(molecules.BioMoleculeSet('mRNA'))
         for mid, sequence in self.db.get_states(molecules.MRNA):
-            self.states['mRNA'][mid] = molecules.MRNA(mid, sequence)
+            self.states['mRNA'].add_new_biomolecule(molecules.MRNA(mid, sequence))
+
+    def __initialize_proteins(self):
+        self.add_new_state(molecules.BioMoleculeSet('Proteins'))
 
     def __initialize_processes(self):
         trsl = translation.Translation("Translation", self)
@@ -100,7 +104,8 @@ class Model:
             self.step()
             if log:  # This could be an entry point for further logging
                 # print count of each protein to the screen
-                print('{}'.format([(len(self.states[x]), x) for x in self.states.keys() if "Protein" in x]))
+                print([p for p in self.states['Proteins']])
+                #print('{}'.format([(self.states[x].count, x) for x in self.states.keys() if "Protein" in x]))
 
 
 if __name__ == "__main__":

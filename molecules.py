@@ -55,14 +55,12 @@ class BioMoleculeSet(BioMoleculeContainer):
         for biom in biomlist:
             self.biomolecule_dict[biom.mid] = biom
 
+    def add_new_biomolecule(self, biom):
+        assert isinstance(biom, BioMolecule)
+        self.biomolecule_dict[biom.mid] = biom
+
     def __getitem__(self, key):
         return self.biomolecule_dict[key]
-
-    def __setitem__(self, key, biom):
-        if not isinstance(biom, BioMolecule):
-            raise Exception('BioMoleculeList can only contain Biomolecules')
-        assert biom.mid == key
-        self.biomolecule_dict[key] = biom
 
     def __iter__(self):
         for key in self.biomolecule_dict.keys():
@@ -99,7 +97,7 @@ class Polymer(BioMolecule):
 class MRNA(Polymer):
     def __init__(self, mid, sequence, mass=0):
         super().__init__(mid, sequence, mass)
-        self.sequence_triplet_binding = [0] * (len(sequence) // 3)
+        self.sequence_triplet_binding = [False] * (len(sequence) // 3)
         self.calculate_mass()
 
     def calculate_mass(self):
