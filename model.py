@@ -1,6 +1,7 @@
 import modeldata
-import molecules as mol
+import molecules
 import translation
+import processes
 
 
 class Output:
@@ -18,9 +19,9 @@ class Output:
         @param species: mol.BioMolecule
         @return: None
         """
-        if isinstance(self.model.states[species], mol.Polymer):
-            pass  # TODO: implement a useful method for Polymers
-        elif isinstance(self.model.states[species], mol.BioMoleculeCount):
+        if isinstance(self.model.states[species], molecules.BioMoleculeSet):
+            pass  # TODO: implement a useful method BioMoleculeSet
+        elif isinstance(self.model.states[species], molecules.BioMoleculeCount):
             self.timecourses[species].add_timepoint(self.model.states[species].count, self.model.timestep)
 
 
@@ -49,37 +50,33 @@ class Model:
         self.states = {}
         self.processes = {}
         self.timestep = 0
-        self.mrnas = {}
-        self.ribosomes = {}
         self.db = modeldata.ModelData()
 
         self.__initialize_ribosomes()
         self.__initialize_mRNA()
-        self.__initialize_states()
         self.__initialize_processes()
+
         self.results = Output(self)
 
+    def add_new_state(self, molecule_container):
+        assert isinstance(molecule_container, molecules.BioMoleculeContainer)
+        self.states[molecule_container.name] = molecule_container
+
+    def add_new_process(self, process):
+        assert isinstance(process, processes.Process)
+        self.processes[process.name] = process
+
     def __initialize_ribosomes(self):
-        self.ribosomes = {'Ribosomes': mol.Ribosome('Ribos', 'Ribosomes', 10)}
+        self.add_new_state(molecules.Ribosome('Ribosomes', 10))
 
     def __initialize_mRNA(self):
-        # I think to have a function for each molecule state generation is more intuitive and less error prone
-        for i, mrna in enumerate(self.db.get_states(mol.MRNA)):
-            mid, name, sequence = mrna
-            self.mrnas[mid] = mol.MRNA(mid, name, sequence)
-
-    def __initialize_states(self):
-        """
-        initialize the different states
-        """
-
-        self.states.update(self.ribosomes)
-        self.states.update(self.mrnas)
+        self.add_new_state(molecules.BioMoleculeSet('mRNA'))
+        for mid, sequence in self.db.get_states(molecules.MRNA):
+            self.states['mRNA'][mid] = molecules.MRNA(mid, sequence)
 
     def __initialize_processes(self):
-        trsl = translation.Translation(1, "Translation")
-        trsl.set_states(self.mrnas.keys(), self.ribosomes.keys())
-        self.processes = {"Translation": trsl}
+        trsl = translation.Translation("Translation", self)
+        self.add_new_process(trsl)
 
     def step(self):
         """
@@ -87,7 +84,7 @@ class Model:
 
         """
         for p in self.processes:
-            self.processes[p].update(self)
+            self.processes[p].update()
 
         for state in self.states:
             self.results.add_timepoint(state)
