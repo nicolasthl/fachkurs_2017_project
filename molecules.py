@@ -57,7 +57,7 @@ class BioMoleculeSet(BioMoleculeContainer):
 
     def add_new_biomolecule(self, biom):
         assert isinstance(biom, BioMolecule)
-        if not self.biomolecule_dict.has_key(biom.mid):
+        if biom.mid not in self.biomolecule_dict:
             self.biomolecule_dict[biom.mid] = biom
         else:
             pass
