@@ -1,142 +1,141 @@
-class BioMolecule:
-    def __init__(self, mid, mass):
-        self.mid = mid
-        self.mass = mass
+from collections import defaultdict
+from copy import copy
 
 
-class BioMoleculeContainer:
+class Molecule:
     def __init__(self, name):
         self.name = name
 
 
-class BioMoleculeCount(BioMoleculeContainer):
-    def __init__(self, name, count=0):
-        super().__init__(name) # call __init__ of BioMoleculeContainer
-        self.count = count
+class Polymer:
+    def __init__(self, valid_monomers, monomers):
+        self.valid_monomers = valid_monomers
+        self.monomers = ''
+        for monomer in monomers:
+            self.add_monomer(monomer)
+
+    def __len__(self):
+        return len(self.monomers)
+
+    def add_monomer(self, monomer):
+        if monomer not in self.valid_monomers:
+            raise ValueError('Invalid monomer {}'.format(monomer))
+        self.monomers += monomer
+
+    def calc_mass(self):
+        return sum(self.valid_monomers[monomer] for monomer in self.monomers)
 
 
-class Ribosome(BioMoleculeCount):
-    """
-    A ribosome can bind MRNA and translate it. After translation is
-    finished it produces a protein.
-
-    During initiation the ribosome checks if a given MRNA is bound
-    by another ribosome and binds only if position 0 is empty.
-
-    Elongation checks if the next codon is unbound and only elongates
-    if the ribosome can move on. If the ribosome encounters a stop
-    codon ("*") translation terminates. The MRNA is detached from the
-    ribosome and the finished protein is returned.
-    """
-
-    def __init__(self, name, count=0):
-        super().__init__(name, count)
-
-
-class Polymerase(BioMoleculeCount):
-    """
-    A polymerase that can elongate nucleotide molecules. This could be used to derive special
-    RNA and DNA polymerases.
-    """
-    pass
-
-
-class RNAPolymeraseII(Polymerase):
-    """
-    A polymerase that generates mRNAs from DNA sequences.
-    """
-    pass
-
-
-class BioMoleculeSet(BioMoleculeContainer):
-    def __init__(self, name, biomlist=[]):
-        super().__init__(name)
-        self.biomolecule_dict = {}
-        for biom in biomlist:
-            self.biomolecule_dict[biom.mid] = biom
-
-    def add_new_biomolecule(self, biom):
-        assert isinstance(biom, BioMolecule)
-        if biom.mid not in self.biomolecule_dict:
-            self.biomolecule_dict[biom.mid] = biom
+class Ribo(Molecule):
+    def __eq__(self, other):
+        if not isinstance(other, Ribo):
+            return NotImplemented
         else:
-            pass
-            # TODO implement more than one biomolecule per ID
-
-    def __getitem__(self, key):
-        return self.biomolecule_dict[key]
-
-    def __iter__(self):
-        for key in self.biomolecule_dict.keys():
-            yield key
-
-    @property
-    def count(self):
-        return len(self.biomolecule_dict)
+            return self.name == other.name
 
 
-class Polymer(BioMolecule):
-    """
-    A polymer molecule that has a sequence attribute which is
-    accessible via indexing the object.
+class Protein(Molecule, Polymer):
+    amino_acids = {
+        'A': 89.0929, 'R': 175.208, 'N': 132.118, 'D': 132.094, 'C': 121.158, 'Q': 146.144, 'E': 146.121,
+        'G': 75.0664, 'H': 155.154, 'I': 131.172, 'L': 131.172, 'K': 147.195, 'M': 149.211, 'F': 165.189,
+        'P': 115.13,  'S': 105.092, 'T': 119.119, 'W': 204.225, 'Y': 181.188, 'V': 117.146
+    }
 
-    @type mid: str
-    @type sequence: list or str
-    @type mass: float
-    """
+    def __init__(self, name, monomers=''):
+        Molecule.__init__(self, name)
+        Polymer.__init__(self, self.amino_acids, monomers)
 
-    def __init__(self, mid, sequence, mass=0):
-        super().__init__(mid, mass)
-        self.sequence = sequence
-
-    def __getitem__(self, key):
-        """
-        implement the access operator []
-        @param key: int or slice
-        @return: sequence element
-        """
-        return self.sequence[key]
+    def __eq__(self, other):
+        if not isinstance(other, Protein):
+            return NotImplemented
+        else:
+            return self.name == other.name and self.monomers == other.monomers
 
 
-class MRNA(Polymer):
-    def __init__(self, mid, sequence, mass=0):
-        super().__init__(mid, sequence, mass)
-        self.sequence_triplet_binding = [False] * (len(sequence) // 3)
-        self.calculate_mass()
+class MRNA(Molecule, Polymer):
+    nuc_acids = {'A': 1.0, 'U': 2.2, 'G': 2.1, 'C': 1.3}
 
-    def calculate_mass(self):
-        self.mass = 0
-        NA_mass = {'A': 1.0, 'U': 2.2, 'G': 2.1, 'C': 1.3}
-        for na in self.sequence:
-            self.mass += NA_mass[na]
+    def __init__(self, name, monomers=''):
+        Molecule.__init__(self, name)
+        Polymer.__init__(self, self.nuc_acids, monomers)
 
-
-class Protein(Polymer):
-    """
-    Protein with Polymer features and mass calculation. A global class
-    attribute counts the number of proteins that have been instantiated.
-
-    A protein can be elongated using the "+" operator:
-
-    >> protein = Protein(1, "prot", "MVFT")
-    >> protein + "A"
-    >> protein.sequence
-    MVFTA
-    """
-    number_of_proteins = 0
-
-    def __init__(self, mid, sequence, mass=0):
-        super().__init__(mid, sequence, mass)
-
-    def __iadd__(self, AS):
-        self.sequence = self.sequence + AS
-        return self
-
-    def calculate_mass(self):
-        AA_mass = dict(A=89.0929, R=175.208, N=132.118, D=132.094, C=121.158, Q=146.144, E=146.121, G=75.0664,
-                       H=155.154, I=131.172, L=131.172, K=147.195, M=149.211, F=165.189, P=115.13, S=105.092, T=119.119,
-                       W=204.225, Y=181.188, V=117.146)
-        for aa in self.sequence:
-            self.mass += AA_mass[aa]
+    def __eq__(self, other):
+        if not isinstance(other, MRNA):
+            return NotImplemented
+        else:
+            return self.name == other.name and self.monomers == other.monomers
 
 
+class MoleculeCollection:
+    def __init__(self, molecule_type):
+        self.molecule_type = molecule_type
+        self.molecules = None
+
+    def add(self, molecule, number):
+        """Adds number molecules to the collection."""
+        if not isinstance(molecule, self.molecule_type):
+            raise ValueError('Expected object of type {}, received of type {}'
+                             .format(self.molecule_type, type(molecule)))
+
+    def pop(self, name, number):
+        """Removes number molecules named name from the collection. When number equals
+        zero, all are removed."""
+        pass
+
+    def count(self, name):
+        """Counts molecules named name."""
+        pass
+
+
+class PopulationCollection(MoleculeCollection):
+    def __init__(self, molecule_type):
+        super().__init__(molecule_type)
+        self.molecules = defaultdict(int)
+
+    def add(self, molecule, number=1):
+        super().add(molecule, number)
+        self.molecules[molecule.name] += number
+
+    def pop(self, name, number=1):
+        if number == 0:
+            self.molecules[name] = 0
+        else:
+            self.molecules[name] -= number
+
+    def count(self, name):
+        return self.molecules[name]
+
+
+class ParticleCollection(MoleculeCollection):
+    def __init__(self, molecule_type):
+        super().__init__(molecule_type)
+        self.molecules = defaultdict(list)
+
+    def add(self, molecule, number=1):
+        super().add(molecule, number)
+        for _ in range(number):
+            self.molecules[molecule.name].append(copy(molecule))
+
+    def pop(self, name, number=1, matcher=lambda x: True):
+        """To select for molecules with certain properties, such as polymer length,
+        provide a matcher function that evaluates to True for matching molecules."""
+        result = []
+        non_matching = []
+        finished = False
+
+        while self.molecules[name] and not finished:
+            molecule = self.molecules[name].pop()
+            if matcher(molecule):
+                result.append(molecule)
+            else:
+                non_matching.append(molecule)
+
+            finished = False if number == 0 else len(result) == number
+
+        assert number == 0 or len(result) == number
+        self.molecules[name] += non_matching
+
+        return result
+
+    def count(self, name, matcher=lambda x: True):
+        return len([x for x in self.molecules[name] if matcher(x)])
