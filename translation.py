@@ -60,8 +60,6 @@ class Translation(processes.Process):
         Elongate the new protein by the correct amino acid. Check if an
         MRNA is bound and if ribosome can move to next codon.
         Terminate if the ribosome reaches a STOP codon.
-
-        @type return: Protein or False
         """
         pass
 

@@ -37,14 +37,14 @@ def test_population_collection():
     with pytest.raises(ValueError):
         ribo_coll.add(Protein('Bla'))
 
-    ribo_coll.add(Ribo('free'), 1000)
-    ribo_coll.add(Ribo('bound'), 500)
+    ribo_coll.populate('free', 1000)
+    ribo_coll.populate('bound', 500)
 
-    ribo_coll.pop('free', 100)
+    ribo_coll.take('free', 100)
     assert ribo_coll.count('free') == 900
     assert ribo_coll.count('bound') == 500
 
-    ribo_coll.pop('bound', 50)
+    ribo_coll.take('bound', 50)
     assert ribo_coll.count('free') == 900
     assert ribo_coll.count('bound') == 450
 
@@ -57,54 +57,39 @@ def test_particle_collection_basics():
     with pytest.raises(ValueError):
         ribo_coll.add(Protein('Bla'))
 
-    ribo_coll.add(Ribo('free'), 1000)
-    ribo_coll.add(Ribo('bound'), 500)
+    ribo_coll.populate('free', 1000)
+    ribo_coll.populate('bound', 500)
 
-    ribo_coll.pop('free', 100)
+    ribo_coll.take('free', 100)
     assert ribo_coll.count('free') == 900
     assert ribo_coll.count('bound') == 500
 
-    ribo_coll.pop('bound', 50)
+    ribo_coll.take('bound', 50)
     assert ribo_coll.count('free') == 900
     assert ribo_coll.count('bound') == 450
 
 
-def test_particle_collection_pop():
+def test_particle_collection_take():
     """The pop method for ParticleCollection should return the molecules."""
     prot_coll = ParticleCollection(Protein)
-    prot_coll.add(Protein('ProtA'), 10)
+    prot_coll.populate('ProtA', 10)
 
-    popped = prot_coll.pop('ProtA')
-    assert len(popped) == 1
+    popped = prot_coll.take('ProtA')
+    assert popped == [Protein('ProtA')]
     assert prot_coll.count('ProtA') == 9
 
 
-def test_particle_collection_count_match():
-    """The count method for ParticleCollection allows matching on molecule
-    properties such as polymer length."""
+def test_protein_iterate():
+    p = Protein('Bla', 'ADRA')
+    assert len([monomer for monomer in p.sequence]) == 4
+
+
+def test_particle_iterate():
     prot_coll = ParticleCollection(Protein)
-    prot_coll.add(Protein('ProtB', 'AGPRHS'), 15)
+    prot_coll.populate('ProtA', 10)
+    prot_coll.populate('ProtB', 20)
 
-    popped = prot_coll.pop('ProtB', 5)
-    assert len(popped) == 5
-    assert prot_coll.count('ProtB') == 10
+    assert len([p for p in prot_coll.get_molecules('ProtA')]) == 10
+    assert len([p for p in prot_coll.get_molecules('ProtB')]) == 20
+    assert len([p for p in prot_coll.get_molecules()]) == 30
 
-    for p in popped:
-        p.add_monomer('S')
-        prot_coll.add(p)
-
-    assert prot_coll.count('ProtB') == 15
-    assert prot_coll.count('ProtB', lambda p: len(p) == 6) == 10
-    assert prot_coll.count('ProtB', lambda p: len(p) == 7) == 5
-
-
-def test_particle_collection_pop_match():
-    """The pop method for ParticleCollection allows matching on molecule
-    properties such as polymer length."""
-    prot_coll = ParticleCollection(Protein)
-    prot_coll.add(Protein('ProtB', 'AGP'), 5)
-    prot_coll.add(Protein('ProtB', 'AGPRHS'), 15)
-
-    popped = prot_coll.pop('ProtB', number=0, matcher=lambda p: len(p) > 5)
-    assert len(popped) == 15
-    assert prot_coll.count('ProtB') == 5
