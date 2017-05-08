@@ -93,3 +93,5 @@ def test_particle_iterate():
     assert len([p for p in prot_coll.get_molecules('ProtB')]) == 20
     assert len([p for p in prot_coll.get_molecules()]) == 30
 
+if __name__ == '__main__':
+    pytest.main(['test_molecules.py'])
