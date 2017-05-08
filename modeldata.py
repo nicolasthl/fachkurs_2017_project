@@ -1,6 +1,6 @@
 import random as rnd
 import string
-import molecules as mol
+from molecules import Ribo, Protein, MRNA, PopulationCollection, ParticleCollection
 
 
 class ModelData:
@@ -35,7 +35,7 @@ class ModelData:
         @return: list
         """
 
-        if molecule_class == mol.MRNA:
+        if molecule_class == MRNA:
             alphabet = list(self.code.keys())
             mrnas = []
             genes = {}

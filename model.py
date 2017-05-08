@@ -1,29 +1,7 @@
 import modeldata
 from molecules import Ribo, Protein, MRNA, PopulationCollection, ParticleCollection
-import translation
+from translation import Translation
 import processes
-
-
-class Output:
-    """
-    class for handling the simulation results of the different species types
-    """
-
-    def __init__(self, model):
-        self.model = model
-        self.timecourses = {state: SimulationResult(model.states[state]) for state in model.states}
-
-    def add_timepoint(self, species):
-        """
-        add a simulation time point for one species
-        @param species: BioMolecule
-        @return: None
-        """
-        pass
-        #if isinstance(self.model.states[species], molecules.BioMoleculeSet):
-        #    pass  # TODO: implement a useful method BioMoleculeSet
-        #elif isinstance(self.model.states[species], molecules.BioMoleculeCount):
-        #    self.timecourses[species].add_timepoint(self.model.states[species].count, self.model.timestep)
 
 
 class SimulationResult:
@@ -31,13 +9,21 @@ class SimulationResult:
     handles and stores a simulation result for one species
     """
 
-    def __init__(self, species):
-        #self.name = species.name
-        self.value = []
+    def __init__(self, molecule_collection):
+        """
+        @param molecule_collection: MoleculeCollection
+        """
+        self.molecule_collection = molecule_collection
+        self.trace = []
         self.time = []
 
-    def add_timepoint(self, time, value):
-        self.value.append(value)
+    def add_timepoint(self, time):
+        """
+        record new time point
+        @param time: float
+        @return: None
+        """
+        self.trace.append(self.molecule_collection.count())
         self.time.append(time)
 
 
@@ -53,7 +39,6 @@ class Model:
         self.timestep = 0
         self.db = modeldata.ModelData()
 
-
         # initialize states
         self.states[Ribo] = PopulationCollection(Ribo)
         self.states[MRNA] = ParticleCollection(MRNA)
@@ -62,9 +47,10 @@ class Model:
         self.states[Protein] = ParticleCollection(Protein)
 
         # initialize processes
-        self.processes[translation.Translation] = translation.Translation("Translation", self)
+        self.processes[Translation] = Translation("Translation", self)
 
-        self.results = Output(self)
+        # generate a SimulationResult class for each state
+        self.results = {state: SimulationResult(self.states[state]) for state in self.states}
 
     def step(self):
         """
@@ -75,7 +61,7 @@ class Model:
             self.processes[p].update()
 
         for state in self.states:
-            self.results.add_timepoint(state)
+            self.results[state].add_timepoint(self.timestep)
 
         self.timestep += 1
 
@@ -88,12 +74,8 @@ class Model:
             self.step()
             if log:  # This could be an entry point for further logging
                 pass
-                # print count of each protein to the screen
-                #print([p for p in self.states['Proteins']])
-                #print('{}'.format([(self.states[x].count, x) for x in self.states.keys() if "Protein" in x]))
-
 
 if __name__ == "__main__":
     c = Model()
     c.simulate(100, log=True)
-    print(c.states)
+

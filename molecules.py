@@ -93,7 +93,9 @@ class PopulationCollection(MoleculeCollection):
         assert self.molecules[name] >= number
         self.molecules[name] -= number
 
-    def count(self, name):
+    def count(self, name=None):
+        if name is None:
+            return sum([self.molecules[name] for name in self.molecules])
         return self.molecules[name]
 
 
@@ -121,7 +123,9 @@ class ParticleCollection(MoleculeCollection):
 
         return result
 
-    def count(self, name):
+    def count(self, name=None):
+        if name is None:
+            return sum([len([x for x in self.molecules[molname]]) for molname in self.molecules])
         return len([x for x in self.molecules[name]])
 
     def get_molecules(self, name=None):
