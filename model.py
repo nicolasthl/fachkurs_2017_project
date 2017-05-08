@@ -1,5 +1,5 @@
 import modeldata
-import molecules
+from molecules import Ribo, Protein, MRNA, PopulationCollection, ParticleCollection
 import translation
 import processes
 
@@ -16,13 +16,14 @@ class Output:
     def add_timepoint(self, species):
         """
         add a simulation time point for one species
-        @param species: mol.BioMolecule
+        @param species: BioMolecule
         @return: None
         """
-        if isinstance(self.model.states[species], molecules.BioMoleculeSet):
-            pass  # TODO: implement a useful method BioMoleculeSet
-        elif isinstance(self.model.states[species], molecules.BioMoleculeCount):
-            self.timecourses[species].add_timepoint(self.model.states[species].count, self.model.timestep)
+        pass
+        #if isinstance(self.model.states[species], molecules.BioMoleculeSet):
+        #    pass  # TODO: implement a useful method BioMoleculeSet
+        #elif isinstance(self.model.states[species], molecules.BioMoleculeCount):
+        #    self.timecourses[species].add_timepoint(self.model.states[species].count, self.model.timestep)
 
 
 class SimulationResult:
@@ -31,7 +32,7 @@ class SimulationResult:
     """
 
     def __init__(self, species):
-        self.name = species.name
+        #self.name = species.name
         self.value = []
         self.time = []
 
@@ -52,35 +53,18 @@ class Model:
         self.timestep = 0
         self.db = modeldata.ModelData()
 
-        self.__initialize_ribosomes()
-        self.__initialize_mRNA()
-        self.__initialize_proteins()
-        self.__initialize_processes()
+
+        # initialize states
+        self.states[Ribo] = PopulationCollection(Ribo)
+        self.states[MRNA] = ParticleCollection(MRNA)
+        for name, sequence in self.db.get_states(MRNA):
+            self.states[MRNA].add(MRNA(name, sequence))
+        self.states[Protein] = ParticleCollection(Protein)
+
+        # initialize processes
+        self.processes[translation.Translation] = translation.Translation("Translation", self)
 
         self.results = Output(self)
-
-    def add_new_state(self, molecule_container):
-        assert isinstance(molecule_container, molecules.BioMoleculeContainer)
-        self.states[molecule_container.name] = molecule_container
-
-    def add_new_process(self, process):
-        assert isinstance(process, processes.Process)
-        self.processes[process.name] = process
-
-    def __initialize_ribosomes(self):
-        self.add_new_state(molecules.Ribosome('Ribosomes', 10))
-
-    def __initialize_mRNA(self):
-        self.add_new_state(molecules.BioMoleculeSet('mRNA'))
-        for mid, sequence in self.db.get_states(molecules.MRNA):
-            self.states['mRNA'].add_new_biomolecule(molecules.MRNA(mid, sequence))
-
-    def __initialize_proteins(self):
-        self.add_new_state(molecules.BioMoleculeSet('Proteins'))
-
-    def __initialize_processes(self):
-        trsl = translation.Translation("Translation", self)
-        self.add_new_process(trsl)
 
     def step(self):
         """
@@ -103,11 +87,13 @@ class Model:
         for s in range(steps):
             self.step()
             if log:  # This could be an entry point for further logging
+                pass
                 # print count of each protein to the screen
-                print([p for p in self.states['Proteins']])
+                #print([p for p in self.states['Proteins']])
                 #print('{}'.format([(self.states[x].count, x) for x in self.states.keys() if "Protein" in x]))
 
 
 if __name__ == "__main__":
     c = Model()
     c.simulate(100, log=True)
+    print(c.states)
