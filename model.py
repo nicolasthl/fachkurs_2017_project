@@ -39,18 +39,21 @@ class Model:
         self.timestep = 0
         self.db = modeldata.ModelData()
 
-        # initialize states
+        self._initialize_states()
+        self._initialize_processes()
+
+        # generate a SimulationResult class for each state
+        self.results = {state: SimulationResult(self.states[state]) for state in self.states}
+
+    def _initialize_states(self):
         self.states[Ribo] = PopulationCollection(Ribo)
         self.states[MRNA] = ParticleCollection(MRNA)
         for name, sequence in self.db.get_states(MRNA):
             self.states[MRNA].add(MRNA(name, sequence))
         self.states[Protein] = ParticleCollection(Protein)
 
-        # initialize processes
+    def _initialize_processes(self):
         self.processes[Translation] = Translation("Translation", self)
-
-        # generate a SimulationResult class for each state
-        self.results = {state: SimulationResult(self.states[state]) for state in self.states}
 
     def step(self):
         """
