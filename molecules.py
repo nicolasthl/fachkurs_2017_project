@@ -1,4 +1,5 @@
 from copy import copy
+from database import ModelData
 
 
 class Molecule:
@@ -39,21 +40,20 @@ class Ribo(Molecule):
 
 
 class Protein(Polymer):
-    amino_acids = {
-        'A': 89.0929, 'R': 175.208, 'N': 132.118, 'D': 132.094, 'C': 121.158, 'Q': 146.144, 'E': 146.121,
-        'G': 75.0664, 'H': 155.154, 'I': 131.172, 'L': 131.172, 'K': 147.195, 'M': 149.211, 'F': 165.189,
-        'P': 115.13,  'S': 105.092, 'T': 119.119, 'W': 204.225, 'Y': 181.188, 'V': 117.146
-    }
+
+    amino_acid_weights = ModelData.amino_acid_weights
 
     def __init__(self, name, sequence=''):
-        super().__init__(name, sequence, self.amino_acids)
+        super().__init__(name, sequence, self.amino_acid_weights)
 
 
 class MRNA(Polymer):
-    nuc_acids = {'A': 1.0, 'U': 2.2, 'G': 2.1, 'C': 1.3}
+
+    nucleic_acid_weights = ModelData.nucleic_acid_weights
 
     def __init__(self, name, sequence=''):
-        super().__init__(name, sequence, self.nuc_acids)
+
+        super().__init__(name, sequence, self.nucleic_acid_weights)
 
 
 class MoleculeCollection:

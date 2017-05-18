@@ -1,5 +1,5 @@
 import pytest
-from modeldata import *
+from database import *
 from molecules import MRNA
 
 

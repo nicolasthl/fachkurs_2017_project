@@ -1,4 +1,4 @@
-import modeldata
+import database
 from molecules import Ribo, Protein, MRNA, PopulationCollection, ParticleCollection
 from translation import Translation
 import processes
@@ -37,7 +37,7 @@ class Model:
         self.states = {}
         self.processes = {}
         self.timestep = 0
-        self.db = modeldata.ModelData()
+        self.db = database.ModelData()
 
         self._initialize_states()
         self._initialize_processes()
