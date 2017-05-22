@@ -1,4 +1,6 @@
 import processes
+import random
+import database
 from molecules import Ribo, Protein, MRNA, PopulationCollection, ParticleCollection
 
 
@@ -26,7 +28,6 @@ class Translation(processes.Process):
         Update all mrnas and translate proteins.
         """
         for mrna_id in self.model.states[MRNA].molecules:
-            prot = None
             for mrna in self.model.states[MRNA].molecules[mrna_id]:
                 self.initiate(mrna)
                 self.elongate(mrna)
@@ -37,7 +38,11 @@ class Translation(processes.Process):
 
         @type mrna: MRNA
         """
-        pass
+        # if not bound already and if ribosomes available
+        if mrna.bindings == [] and self.model.states[Ribo].molecules['free ribos'] > 0:
+            mrna.bindings.append('ribo')
+            self.model.states[Ribo].take('free ribos')
+            self.model.states[Ribo].add(Ribo('bound ribos'))
 
     def elongate(self, mrna):
         """
@@ -45,7 +50,19 @@ class Translation(processes.Process):
         MRNA is bound and if ribosome can move to next codon.
         Terminate if the ribosome reaches a STOP codon.
         """
-        pass
+        if 'ribo' in mrna.bindings:
+            prot = Protein(mrna.name.lower().capitalize())  # protein names are like mRNA names, but only capitalized
+            for i in range(int(len(mrna.sequence) / 3)):  # go through codons
+                codon = mrna.sequence[ i:i + 3 ]
+                amino_acid = database.ModelData.codon_to_amino_acid[codon]
+                if amino_acid != '*':  # if STOP codon
+                    prot.add_monomer(amino_acid)
+                else:
+                    self.model.states[ Protein ].add(prot)
+                    mrna.bindings.remove('ribo')
+                    self.model.states[ Ribo ].take('bound ribos')
+                    self.model.states[ Ribo ].add(Ribo('free ribos'))
+                    return prot
 
     def terminate(self, mrna):
         """

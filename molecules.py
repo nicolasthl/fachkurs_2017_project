@@ -29,7 +29,6 @@ class Polymer(Molecule):
         if monomer not in self.valid_monomers:
             raise ValueError('Invalid monomer {}'.format(monomer))
         self.sequence += monomer
-        self.bindings.append(None)
 
     def calc_mass(self):
         return sum(self.valid_monomers[monomer] for monomer in self.sequence)

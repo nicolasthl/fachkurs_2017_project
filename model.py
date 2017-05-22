@@ -47,6 +47,7 @@ class Model:
 
     def _initialize_states(self):
         self.states[Ribo] = PopulationCollection(Ribo)
+        self.states[Ribo].populate("free ribos", 10)
         self.states[MRNA] = ParticleCollection(MRNA)
         for name, sequence in self.db.get_states(MRNA):
             self.states[MRNA].add(MRNA(name, sequence))
@@ -57,8 +58,7 @@ class Model:
 
     def step(self):
         """
-        Do one update step for each process.
-
+        Do one update step for each process and save the results.
         """
         for p in self.processes:
             self.processes[p].update()
@@ -71,12 +71,15 @@ class Model:
     def simulate(self, steps, log=True):
         """
         Simulate the model for some time.
-
+        @param steps: int
+        @param log: Bool
+        @return None
         """
         for s in range(steps):
             self.step()
             if log:  # This could be an entry point for further logging
-                pass
+                print('mRNAs', self.states[MRNA].count())
+                print("Proteins", self.states[Protein].count())
 
 if __name__ == "__main__":
     c = Model()
