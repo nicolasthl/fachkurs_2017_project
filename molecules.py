@@ -11,9 +11,9 @@ class Molecule:
 
 
 class Polymer(Molecule):
-    def __init__(self, name, sequence, valid_monomers):
+    def __init__(self, name, sequence, mass_of_monomers):
         super().__init__(name)
-        self.valid_monomers = valid_monomers
+        self.mass_of_monomers = mass_of_monomers
         self.sequence = ''
         self.bindings = []
         for monomer in sequence:
@@ -26,12 +26,12 @@ class Polymer(Molecule):
         return len(self.sequence)
 
     def add_monomer(self, monomer):
-        if monomer not in self.valid_monomers:
+        if monomer not in self.mass_of_monomers:
             raise ValueError('Invalid monomer {}'.format(monomer))
         self.sequence += monomer
 
     def calc_mass(self):
-        return sum(self.valid_monomers[monomer] for monomer in self.sequence)
+        return sum(self.mass_of_monomers[monomer] for monomer in self.sequence)
 
 
 class Ribo(Molecule):
