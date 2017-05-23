@@ -112,13 +112,12 @@ class ParticleCollection(MoleculeCollection):
 
     def take(self, name, number=1):
         result = []
-        while self.molecules[name]:
-            molecule = self.molecules[name].pop()
-            result.append(molecule)
-            if number == len(result):
-                break
+        for _ in range(number):
+            if len(self.molecules[name]) > 0:
+                molecule = self.molecules[name].pop()
+                result.append(molecule)
 
-        assert number == 0 or number == len(result)
+        assert number == len(result)
 
         return result
 
